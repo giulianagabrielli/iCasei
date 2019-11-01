@@ -1,3 +1,67 @@
+<?php
+
+    function cadastroPresentes($convidado, $item, $valor, $status) {
+
+        $arquivoJson = "presentes.json";
+
+        if(file_exists($arquivoJson)) {
+
+            $conteudoJson = file_get_contents($arquivoJson); 
+            $informacoesCadastradas = json_decode($conteudoJson, true);
+
+            if($informacoesCadastradas==[]){
+                $informacoesCadastradas[] = [
+                    "id"=> 1,
+                    "convidado"=> $convidado,
+                    "item"=> $item,
+                    "valor"=> $valor,
+                    "status"=> $status
+                ];
+
+            } else {
+                $ultimoId = end($informacoesCadastradas);
+                $incrementandoId = $ultimoId["id"] + 1;
+
+                $informacoesCadastradas[] = [
+                    "id"=> $incrementandoId,
+                    "convidado"=> $convidado,
+                    "item"=> $item,
+                    "valor"=> $valor,
+                    "status"=> $status
+                ];
+            }
+
+            $arrayEmJson = json_encode($informacoesCadastradas);
+            $jsonCarregado = file_put_contents($arquivoJson, $arrayEmJson);
+
+        } else {
+
+            $informacoesCadastradas = [];
+            $informacoesCadastradas[] = [
+                "id"=> 1,
+                "convidado"=> $convidado,
+                "item"=> $item,
+                "valor"=> $valor,
+                "status"=> $status
+            ];
+
+            $arrayEmJson = json_encode($informacoesCadastradas);
+            $jsonCarregado = file_put_contents($arquivoJson, $arrayEmJson);
+
+        }
+        
+    };
+
+    if($_POST) {
+        echo cadastroPresentes($_POST["convidado"], $_POST["item"], $_POST["valor"], $_POST["status"]);
+    };
+
+    $arquivoJson = "presentes.json";
+    $informacoesCadastradas = json_decode(file_get_contents($arquivoJson), true);
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +69,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <title>Document</title>
+    <title>Detalhes</title>
 </head>
 <body>
     <!-- abas -->
@@ -69,7 +133,8 @@
     <div class="card">
         <div class="card-body">
             <h4>Número de presentes recebidos</h4>
-            <p>100</p>
+            <?php $ultimoId = end($informacoesCadastradas) ?>
+            <p> <?php echo $ultimoId["id"] ?> </p>
         </div>
     </div>
 </body>
